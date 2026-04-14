@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+      background: #f0f0f0;
+    }
+    .msg { text-align: center; color: #555; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #ddd;
+      border-top-color: #06c755;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="msg">
+    <div class="spinner"></div>
+    <p id="status">処理中です…</p>
+  </div>
+
+  <script>
+    const LIFF_ID = '2009781721-Xtn1oC2V';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz2S7y51_TWN6nZ8LT4_F_35gx9Q-azdEgyBOHNuPfif6FGsVCzvV5NTbdd0eKcAPZR/exec';
+
+    (async () => {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const source = urlParams.get('from') || 'unknown';
+
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+        const displayName = profile.displayName;
+
+        // GASにデータを送信
+        await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, displayName, source })
+        });
+
+        if (liff.isInClient()) {
+          liff.closeWindow();
+        } else {
+          document.getElementById('status').textContent = '✅ 登録完了！';
+        }
+
+      } catch (err) {
+        document.getElementById('status').textContent = 'エラー: ' + err.message;
+      }
+    })();
+  </script>
+</body>
+</html>
