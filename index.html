@@ -57,11 +57,11 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
-        fetch(GAS_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, displayName, source })
+        // GASにデータをGETパラメータで送信（no-corsの制限を回避）
+        const params = new URLSearchParams({ userId, displayName, source });
+        fetch(GAS_URL + '?' + params.toString(), {
+          method: 'GET',
+          mode: 'no-cors'
         }).catch(() => {});
 
         // GAS送信後に少し待ってから遷移
