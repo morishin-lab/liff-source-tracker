@@ -54,23 +54,24 @@
         const displayName = profile.displayName;
 
         // GASにデータを送信
-        await fetch(GAS_URL, {
+        fetch(GAS_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, displayName, source })
-        });
-
-        if (liff.isInClient()) {
-          liff.closeWindow();
-        } else {
-          document.getElementById('status').textContent = '✅ 登録完了！';
-        }
-
-      } catch (err) {
-        document.getElementById('status').textContent = 'エラー: ' + err.message;
-      }
-    })();
+        }).catch(() => {}); // no-corsはエラーを無視
+        
+        // fetchの完了を待たず、1.5秒後に強制クローズ
+        setTimeout(() => {
+          if (liff.isInClient()) {
+            liff.openWindow({
+              url: 'https://line.me/R/ti/p/@952qynai',
+              external: false
+            });
+          } else {
+            document.getElementById('status').textContent = '✅ 登録完了！';
+          }
+        }, 1500);
   </script>
 </body>
 </html>
