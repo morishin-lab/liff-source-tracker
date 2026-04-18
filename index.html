@@ -36,9 +36,14 @@
     const LIFF_ID = '2009781721-Xtn1oC2V';
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbz2S7y51_TWN6nZ8LT4_F_35gx9Q-azdEgyBOHNuPfif6FGsVCzvV5NTbdd0eKcAPZR/exec';
 
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     (async () => {
       try {
         await liff.init({ liffId: LIFF_ID });
+
+        // Android対策：init後に少し待つ
+        await sleep(1000);
 
         if (!liff.isLoggedIn()) {
           liff.login();
@@ -59,17 +64,18 @@
           body: JSON.stringify({ userId, displayName, source })
         }).catch(() => {});
 
-        setTimeout(() => {
-          if (liff.isInClient()) {
-            liff.openWindow({
-              url: 'https://line.me/R/ti/p/@952qynai',
-              external: false
-            });
-          } else {
-            document.querySelector('.spinner').style.display = 'none';
-            document.getElementById('status').textContent = '✅ 登録完了！LINEアプリから公式アカウントを開いてください。';
-          }
-        }, 2500);
+        // GAS送信後に少し待ってから遷移
+        await sleep(2000);
+
+        if (liff.isInClient()) {
+          liff.openWindow({
+            url: 'https://line.me/R/ti/p/@952qynai',
+            external: false
+          });
+        } else {
+          document.querySelector('.spinner').style.display = 'none';
+          document.getElementById('status').textContent = '✅ 登録完了！LINEアプリから公式アカウントを開いてください。';
+        }
 
       } catch (err) {
         document.querySelector('.spinner').style.display = 'none';
