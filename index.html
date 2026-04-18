@@ -32,7 +32,6 @@
     <div class="spinner"></div>
     <p id="status">処理中です…</p>
   </div>
-
   <script>
     const LIFF_ID = '2009781721-Xtn1oC2V';
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbz2S7y51_TWN6nZ8LT4_F_35gx9Q-azdEgyBOHNuPfif6FGsVCzvV5NTbdd0eKcAPZR/exec';
@@ -53,15 +52,13 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
-        // GASにデータを送信
         fetch(GAS_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, displayName, source })
-        }).catch(() => {}); // no-corsはエラーを無視
-        
-        // fetchの完了を待たず、1.5秒後に強制クローズ
+        }).catch(() => {});
+
         setTimeout(() => {
           if (liff.isInClient()) {
             liff.openWindow({
@@ -72,6 +69,11 @@
             document.getElementById('status').textContent = '✅ 登録完了！';
           }
         }, 1500);
+
+      } catch (err) {
+        document.getElementById('status').textContent = 'エラー: ' + err.message;
+      }
+    })();
   </script>
 </body>
 </html>
