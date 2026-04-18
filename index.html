@@ -61,19 +61,17 @@
 
         setTimeout(() => {
           if (liff.isInClient()) {
+            // LINEアプリ内：トーク画面へ遷移
             liff.openWindow({
               url: 'https://line.me/R/ti/p/@952qynai',
               external: false
             });
           } else {
-            document.getElementById('status').textContent = '✅ 登録完了！';
+            // 外部ブラウザ：登録完了を表示してスピナーを止める
+            document.querySelector('.spinner').style.display = 'none';
+            document.getElementById('status').textContent = '✅ 登録完了！LINEアプリから公式アカウントを開いてください。';
           }
         }, 1500);
-
-      } catch (err) {
-        document.getElementById('status').textContent = 'エラー: ' + err.message;
-      }
-    })();
   </script>
 </body>
 </html>
